@@ -262,6 +262,17 @@ function ProductList() {
      }));
     };
 
+    const reactivateAddButton=(product)=>{
+        setAddedToCart((prevState) => ({
+            ...prevState,
+            [product.name]: false, // Set the product name as key and value as false to indicate it's removed from cart
+            }));
+    };
+
+    const checkDisabled = (name) => {
+        return addedToCart[name] === true;
+    };
+
     const totalQuantity = useSelector(state => 
         state.cart.items.reduce((total, item) => total + item.quantity, 0)
       );
@@ -310,7 +321,15 @@ function ProductList() {
                             <div className="product-title">{plant.name}</div>
                             <div className='product-description'>{plant.description}</div>
                             <div className='product-cost'>{plant.cost}</div>
-                            <button  className="product-button" onClick={() => handleAddToCart(plant)}>Add to Cart</button>
+                            <button 
+                                className={`product-button ${checkDisabled(plant.name) ? 'added-to-cart' : ''}`} 
+                                onClick={() => handleAddToCart(plant)} 
+                                disabled={checkDisabled(plant.name)}
+                            >
+                                <div>
+                                    {!checkDisabled(plant.name) ? <div>Add To Cart</div> : <div>Added To Cart</div>}
+                                </div>
+                            </button>
                         </div>
                         ))}
                     </div>
@@ -318,7 +337,7 @@ function ProductList() {
                 ))}
         </div>
  ) :  (
-    <CartItem onContinueShopping={handleContinueShopping}/>
+    <CartItem onContinueShopping={handleContinueShopping} reactivateAddButton={reactivateAddButton}/>
 )}
     </div>
     );
